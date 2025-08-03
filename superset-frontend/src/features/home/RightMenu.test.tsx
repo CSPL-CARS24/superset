@@ -160,7 +160,7 @@ beforeEach(async () => {
   );
 });
 
-afterEach(() => fetchMock.restore());
+afterEach(() => fetchMock.clearHistory());
 
 const resetUseSelectorMock = () => {
   useSelectorMock.mockReturnValueOnce({
@@ -216,7 +216,7 @@ test('If user has permission to upload files AND connect DBs we query existing D
     useTheme: true,
   });
   await waitFor(() => expect(container).toBeVisible());
-  const callsD = fetchMock.calls(/database\/\?q/);
+  const callsD = fetchMock.callHistory.calls(/database\/\?q/);
   expect(callsD).toHaveLength(2);
   expect(callsD[0][0]).toMatchInlineSnapshot(
     `"http://localhost/api/v1/database/?q=(filters:!((col:allow_file_upload,opr:upload_is_enabled,value:!t)))"`,

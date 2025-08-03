@@ -73,8 +73,8 @@ describe('ChartList', () => {
   });
 
   afterEach(() => {
-    fetchMock.resetHistory();
-    fetchMock.restore();
+    fetchMock.clearHistory();
+    fetchMock.clearHistory();
     // Reset feature flag mock
     (
       isFeatureEnabled as jest.MockedFunction<typeof isFeatureEnabled>
@@ -153,8 +153,8 @@ describe('ChartList', () => {
     renderChartList(mockUser);
 
     await waitFor(() => {
-      const infoCalls = fetchMock.calls(/chart\/_info/);
-      const dataCalls = fetchMock.calls(/chart\/\?q/);
+      const infoCalls = fetchMock.callHistory.calls(/chart\/_info/);
+      const dataCalls = fetchMock.callHistory.calls(/chart\/\?q/);
 
       expect(infoCalls).toHaveLength(1);
       expect(dataCalls).toHaveLength(1);
@@ -193,8 +193,8 @@ describe('ChartList', () => {
     // Eventually data should load
     await waitFor(
       () => {
-        const infoCalls = fetchMock.calls(/chart\/_info/);
-        const dataCalls = fetchMock.calls(/chart\/\?q/);
+        const infoCalls = fetchMock.callHistory.calls(/chart\/_info/);
+        const dataCalls = fetchMock.callHistory.calls(/chart\/\?q/);
 
         expect(infoCalls).toHaveLength(1);
         expect(dataCalls).toHaveLength(1);
@@ -290,8 +290,8 @@ describe('ChartList - Global Filter Interactions', () => {
   });
 
   afterEach(() => {
-    fetchMock.resetHistory();
-    fetchMock.restore();
+    fetchMock.clearHistory();
+    fetchMock.clearHistory();
     // Reset feature flag mock
     (
       isFeatureEnabled as jest.MockedFunction<typeof isFeatureEnabled>

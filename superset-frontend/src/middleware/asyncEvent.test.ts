@@ -94,11 +94,11 @@ describe('asyncEvent middleware', () => {
   });
 
   afterEach(() => {
-    fetchMock.reset();
+    fetchMock.clearHistory();
     mockedIsFeatureEnabled.mockRestore();
   });
 
-  afterAll(() => fetchMock.reset());
+  afterAll(() => fetchMock.clearHistory());
 
   describe('polling transport', () => {
     const config = {
@@ -124,12 +124,12 @@ describe('asyncEvent middleware', () => {
         await asyncEvent.waitForAsyncData(asyncPendingEvent);
       expect(actualResolved).toEqual([chartData]);
 
-      expect(fetchMock.calls(EVENTS_ENDPOINT)).toHaveLength(1);
-      expect(fetchMock.calls(CACHED_DATA_ENDPOINT)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(EVENTS_ENDPOINT)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(CACHED_DATA_ENDPOINT)).toHaveLength(1);
     });
 
     it('rejects on event error status', async () => {
-      fetchMock.reset();
+      fetchMock.clearHistory();
       fetchMock.get(EVENTS_ENDPOINT, {
         status: 200,
         body: { result: [asyncErrorEvent] },
@@ -144,12 +144,12 @@ describe('asyncEvent middleware', () => {
         expect(error).toEqual(errorResponse);
       }
 
-      expect(fetchMock.calls(EVENTS_ENDPOINT)).toHaveLength(1);
-      expect(fetchMock.calls(CACHED_DATA_ENDPOINT)).toHaveLength(0);
+      expect(fetchMock.callHistory.calls(EVENTS_ENDPOINT)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(CACHED_DATA_ENDPOINT)).toHaveLength(0);
     });
 
     it('rejects on cached data fetch error', async () => {
-      fetchMock.reset();
+      fetchMock.clearHistory();
       fetchMock.get(EVENTS_ENDPOINT, {
         status: 200,
         body: { result: [asyncDoneEvent] },
@@ -167,8 +167,8 @@ describe('asyncEvent middleware', () => {
         expect(error).toEqual('Bad request');
       }
 
-      expect(fetchMock.calls(EVENTS_ENDPOINT)).toHaveLength(1);
-      expect(fetchMock.calls(CACHED_DATA_ENDPOINT)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(EVENTS_ENDPOINT)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(CACHED_DATA_ENDPOINT)).toHaveLength(1);
     });
   });
 
@@ -207,8 +207,8 @@ describe('asyncEvent middleware', () => {
 
       await expect(promise).resolves.toEqual([chartData]);
 
-      expect(fetchMock.calls(CACHED_DATA_ENDPOINT)).toHaveLength(1);
-      expect(fetchMock.calls(EVENTS_ENDPOINT)).toHaveLength(0);
+      expect(fetchMock.callHistory.calls(CACHED_DATA_ENDPOINT)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(EVENTS_ENDPOINT)).toHaveLength(0);
     });
 
     it('rejects on event error status', async () => {
@@ -222,12 +222,12 @@ describe('asyncEvent middleware', () => {
 
       await expect(promise).rejects.toEqual(errorResponse);
 
-      expect(fetchMock.calls(CACHED_DATA_ENDPOINT)).toHaveLength(0);
-      expect(fetchMock.calls(EVENTS_ENDPOINT)).toHaveLength(0);
+      expect(fetchMock.callHistory.calls(CACHED_DATA_ENDPOINT)).toHaveLength(0);
+      expect(fetchMock.callHistory.calls(EVENTS_ENDPOINT)).toHaveLength(0);
     });
 
     it('rejects on cached data fetch error', async () => {
-      fetchMock.reset();
+      fetchMock.clearHistory();
       fetchMock.get(CACHED_DATA_ENDPOINT, {
         status: 400,
       });
@@ -247,8 +247,8 @@ describe('asyncEvent middleware', () => {
         expect(error).toEqual('Bad request');
       }
 
-      expect(fetchMock.calls(CACHED_DATA_ENDPOINT)).toHaveLength(1);
-      expect(fetchMock.calls(EVENTS_ENDPOINT)).toHaveLength(0);
+      expect(fetchMock.callHistory.calls(CACHED_DATA_ENDPOINT)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(EVENTS_ENDPOINT)).toHaveLength(0);
     });
 
     it('resolves when events are received before listener', async () => {
@@ -259,8 +259,8 @@ describe('asyncEvent middleware', () => {
       const promise = asyncEvent.waitForAsyncData(asyncPendingEvent);
       await expect(promise).resolves.toEqual([chartData]);
 
-      expect(fetchMock.calls(CACHED_DATA_ENDPOINT)).toHaveLength(1);
-      expect(fetchMock.calls(EVENTS_ENDPOINT)).toHaveLength(0);
+      expect(fetchMock.callHistory.calls(CACHED_DATA_ENDPOINT)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(EVENTS_ENDPOINT)).toHaveLength(0);
     });
   });
 });

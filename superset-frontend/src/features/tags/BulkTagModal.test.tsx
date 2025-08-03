@@ -38,7 +38,7 @@ const mockedProps = {
 
 describe('BulkTagModal', () => {
   afterEach(() => {
-    fetchMock.reset();
+    fetchMock.clearHistory();
     jest.clearAllMocks();
   });
 

@@ -155,7 +155,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  fetchMock.restore();
+  fetchMock.clearHistory();
 });
 
 it('renders modal', () => {

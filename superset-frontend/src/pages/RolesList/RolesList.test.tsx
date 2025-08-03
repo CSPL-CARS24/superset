@@ -121,7 +121,7 @@ describe('RolesList', () => {
     return mounted;
   }
   beforeEach(() => {
-    fetchMock.resetHistory();
+    fetchMock.clearHistory();
   });
 
   it('renders', async () => {
@@ -132,7 +132,7 @@ describe('RolesList', () => {
   it('fetches roles on load', async () => {
     await renderAndWait();
     await waitFor(() => {
-      const calls = fetchMock.calls(rolesEndpoint);
+      const calls = fetchMock.callHistory.calls(rolesEndpoint);
       expect(calls.length).toBeGreaterThan(0);
     });
   });
@@ -140,7 +140,7 @@ describe('RolesList', () => {
   it('fetches permissions on load', async () => {
     await renderAndWait();
     await waitFor(() => {
-      const permissionCalls = fetchMock.calls(permissionsEndpoint);
+      const permissionCalls = fetchMock.callHistory.calls(permissionsEndpoint);
       expect(permissionCalls.length).toBeGreaterThan(0);
     });
   });

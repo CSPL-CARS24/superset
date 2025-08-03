@@ -50,7 +50,7 @@ jest.mock('@superset-ui/core', () => ({
 }));
 
 afterEach(() => {
-  fetchMock.reset();
+  fetchMock.clearHistory();
   act(() => {
     store.dispatch(api.util.resetApiState());
   });
@@ -115,13 +115,15 @@ const initialize = (withValidator = false) => {
 test('skips fetching validation if validator is undefined', () => {
   const { result } = initialize();
   expect(result.current.data).toEqual([]);
-  expect(fetchMock.calls(queryValidationApiRoute)).toHaveLength(0);
+  expect(fetchMock.callHistory.calls(queryValidationApiRoute)).toHaveLength(0);
 });
 
 test('returns validation if validator is configured', async () => {
   const { result, waitFor } = initialize(true);
   await waitFor(() =>
-    expect(fetchMock.calls(queryValidationApiRoute)).toHaveLength(1),
+    expect(fetchMock.callHistory.calls(queryValidationApiRoute)).toHaveLength(
+      1,
+    ),
   );
   expect(result.current.data).toEqual(
     fakeApiResult.result.map(err => ({

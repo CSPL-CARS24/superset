@@ -35,10 +35,10 @@ describe('callApiAndParseWithTimeout()', () => {
 
   beforeEach(() => fetchMock.get(mockGetUrl, mockGetPayload));
 
-  afterAll(() => fetchMock.restore());
+  afterAll(() => fetchMock.clearHistory());
 
   afterEach(() => {
-    fetchMock.reset();
+    fetchMock.clearHistory();
     jest.useRealTimers();
   });
 
@@ -108,7 +108,7 @@ describe('callApiAndParseWithTimeout()', () => {
       } catch (err) {
         error = err;
       } finally {
-        expect(fetchMock.calls(mockTimeoutUrl)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(mockTimeoutUrl)).toHaveLength(1);
         expect(error).toEqual({
           error: 'Request timed out',
           statusText: 'timeout',

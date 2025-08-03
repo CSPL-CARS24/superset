@@ -162,7 +162,7 @@ beforeEach(() => {
 });
 
 afterAll(() => {
-  fetchMock.restore();
+  fetchMock.clearHistory();
 });
 
 describe('PropertiesModal', () => {

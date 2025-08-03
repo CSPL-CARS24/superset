@@ -71,7 +71,7 @@ describe('ChartList - List View Tests', () => {
   });
 
   afterEach(() => {
-    fetchMock.restore();
+    fetchMock.clearHistory();
   });
 
   it('renders ChartList in list view', async () => {

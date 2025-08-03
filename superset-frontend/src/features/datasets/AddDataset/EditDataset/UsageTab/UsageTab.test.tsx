@@ -41,7 +41,7 @@ const getChartResponse = (result: ChartListChart[]) => ({
 
 const CHARTS_ENDPOINT = 'glob:*/api/v1/chart/?*';
 const mockChartsFetch = (response: fetchMock.MockResponse) => {
-  fetchMock.reset();
+  fetchMock.clearHistory();
   fetchMock.get('glob:*/api/v1/chart/_info?*', {
     permissions: ['can_export', 'can_read', 'can_write'],
   });
@@ -74,7 +74,7 @@ const expectLastChartRequest = (params?: {
     ...(params || {}),
   };
 
-  const calls = fetchMock.calls(CHARTS_ENDPOINT);
+  const calls = fetchMock.callHistory.calls(CHARTS_ENDPOINT);
   expect(calls.length).toBeGreaterThan(0);
   const lastChartRequestUrl = calls[calls.length - 1][0];
   expect(lastChartRequestUrl).toMatch(
@@ -137,7 +137,7 @@ test('shows empty state', async () => {
 
   expect(noChartsTitle).toBeVisible();
   expect(noChartsDescription).toBeVisible();
-  expect(fetchMock.calls(CHARTS_ENDPOINT)).toHaveLength(1);
+  expect(fetchMock.callHistory.calls(CHARTS_ENDPOINT)).toHaveLength(1);
   expectLastChartRequest();
 });
 

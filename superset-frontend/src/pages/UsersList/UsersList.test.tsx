@@ -106,7 +106,7 @@ describe('UsersList', () => {
     return mounted;
   }
   beforeEach(() => {
-    fetchMock.resetHistory();
+    fetchMock.clearHistory();
   });
 
   it('renders', async () => {
@@ -117,7 +117,7 @@ describe('UsersList', () => {
   it('fetches users on load', async () => {
     await renderAndWait();
     await waitFor(() => {
-      const calls = fetchMock.calls(usersEndpoint);
+      const calls = fetchMock.callHistory.calls(usersEndpoint);
       expect(calls.length).toBeGreaterThan(0);
     });
   });
@@ -125,7 +125,7 @@ describe('UsersList', () => {
   it('fetches roles on load', async () => {
     await renderAndWait();
     await waitFor(() => {
-      const calls = fetchMock.calls(rolesEndpoint);
+      const calls = fetchMock.callHistory.calls(rolesEndpoint);
       expect(calls.length).toBeGreaterThan(0);
     });
   });

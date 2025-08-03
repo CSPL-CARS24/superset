@@ -126,12 +126,12 @@ fetchMock.put('glob:*/api/v1/theme/1', {
 
 describe('ThemeModal', () => {
   beforeEach(() => {
-    fetchMock.resetHistory();
+    fetchMock.clearHistory();
     jest.clearAllMocks();
   });
 
   afterEach(() => {
-    fetchMock.restore();
+    fetchMock.clearHistory();
   });
 
   test('should export ThemeModal component', () => {

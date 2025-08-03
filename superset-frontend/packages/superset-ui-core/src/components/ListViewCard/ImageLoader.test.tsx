@@ -24,13 +24,10 @@ import { ImageLoader, type BackgroundPosition } from './ImageLoader';
 global.URL.createObjectURL = jest.fn(() => '/local_url');
 const blob = new Blob([], { type: 'image/png' });
 
-fetchMock.get(
-  '/thumbnail',
-  { body: blob, headers: { 'Content-Type': 'image/png' } },
-  {
-    sendAsJson: false,
-  },
-);
+fetchMock.get('/thumbnail', {
+  body: blob,
+  headers: { 'Content-Type': 'image/png' },
+});
 
 describe('ImageLoader', () => {
   const defaultProps = {
@@ -44,7 +41,7 @@ describe('ImageLoader', () => {
     return render(<ImageLoader {...props} />);
   };
 
-  afterEach(() => fetchMock.resetHistory());
+  afterEach(() => fetchMock.clearHistory());
 
   it('is a valid element', async () => {
     setup();
@@ -57,7 +54,7 @@ describe('ImageLoader', () => {
       'src',
       '/fallback',
     );
-    expect(fetchMock.calls(/thumbnail/)).toHaveLength(1);
+    expect(fetchMock.callHistory.calls(/thumbnail/)).toHaveLength(1);
     expect(global.URL.createObjectURL).toHaveBeenCalled();
     expect(await screen.findByTestId('image-loader')).toHaveAttribute(
       'src',
@@ -72,7 +69,7 @@ describe('ImageLoader', () => {
       'src',
       '/fallback',
     );
-    expect(fetchMock.calls(/thumbnail2/)).toHaveLength(1);
+    expect(fetchMock.callHistory.calls(/thumbnail2/)).toHaveLength(1);
     expect(await screen.findByTestId('image-loader')).toHaveAttribute(
       'src',
       '/fallback',

@@ -87,7 +87,7 @@ const renderCssTemplatesList = (props = {}) =>
 
 describe('CssTemplatesList', () => {
   beforeEach(() => {
-    fetchMock.resetHistory();
+    fetchMock.clearHistory();
   });
 
   it('renders', async () => {
@@ -110,7 +110,7 @@ describe('CssTemplatesList', () => {
   it('fetches templates', async () => {
     renderCssTemplatesList();
     await waitFor(() => {
-      const calls = fetchMock.calls(/css_template\/\?q/);
+      const calls = fetchMock.callHistory.calls(/css_template\/\?q/);
       expect(calls).toHaveLength(1);
       expect(calls[0][0]).toContain(
         'order_column:template_name,order_direction:desc,page:0,page_size:25',
@@ -137,7 +137,7 @@ describe('CssTemplatesList', () => {
 
     // Wait for search API call
     await waitFor(() => {
-      const calls = fetchMock.calls(/css_template\/\?q/);
+      const calls = fetchMock.callHistory.calls(/css_template\/\?q/);
       const searchCall = calls.find(call =>
         call[0].includes('filters:!((col:template_name,opr:ct,value:fooo))'),
       );
@@ -169,7 +169,9 @@ describe('CssTemplatesList', () => {
 
     // Wait for delete request
     await waitFor(() => {
-      expect(fetchMock.calls(/css_template\/0/, 'DELETE')).toHaveLength(1);
+      expect(
+        fetchMock.callHistory.calls(/css_template\/0/, 'DELETE'),
+      ).toHaveLength(1);
     });
   });
 

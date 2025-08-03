@@ -700,7 +700,7 @@ describe('ThemeController', () => {
 
       // Simulate system theme change
       mockMediaQuery.matches = true;
-      const changeHandler = mockMediaQuery.addEventListener.mock.calls[0][1];
+      const changeHandler = mockMediaQuery.addEventListener.mock.calls[0].options;
 
       changeHandler();
 
@@ -714,7 +714,7 @@ describe('ThemeController', () => {
 
       // Simulate system theme change
       mockMediaQuery.matches = true;
-      const changeHandler = mockMediaQuery.addEventListener.mock.calls[0][1];
+      const changeHandler = mockMediaQuery.addEventListener.mock.calls[0].options;
 
       changeHandler();
 

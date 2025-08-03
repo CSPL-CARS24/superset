@@ -25,7 +25,7 @@ import setupClientForTest from '../setupClientForTest';
 describe('getFormData()', () => {
   beforeAll(() => setupClientForTest());
 
-  afterEach(() => fetchMock.restore());
+  afterEach(() => fetchMock.clearHistory());
 
   const mockData = {
     datasource: '1__table',

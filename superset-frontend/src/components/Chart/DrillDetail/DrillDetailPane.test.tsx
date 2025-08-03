@@ -115,7 +115,7 @@ const fetchWithData = () => {
 };
 
 afterEach(() => {
-  fetchMock.restore();
+  fetchMock.clearHistory();
   supersetGetCache.clear();
 });
 
@@ -183,7 +183,7 @@ test('should render the metadata bar', async () => {
 
 test('should render an error message when fails to load the metadata', async () => {
   fetchWithNoData();
-  fetchMock.get(DATASET_ENDPOINT, { status: 400 }, { overwriteRoutes: true });
+  fetchMock.get(DATASET_ENDPOINT, { status: 400 });
   setup();
   expect(
     await screen.findByText('There was an error loading the dataset metadata'),

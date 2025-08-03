@@ -154,7 +154,7 @@ describe('logger middleware', () => {
     timeSandbox.clock.tick(2000);
     expect(beaconMock.mock.calls.length).toBe(1);
 
-    const formData = beaconMock.mock.calls[0][1];
+    const formData = beaconMock.mock.calls[0].options;
     expect(formData.getAll('guest_token')[0]).toMatch('token');
   });
 });

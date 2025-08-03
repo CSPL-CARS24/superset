@@ -71,7 +71,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  fetchMock.reset();
+  fetchMock.clearHistory();
 });
 
 const mockedProps = {
@@ -103,7 +103,9 @@ test('renders indexes', async () => {
     initialState,
   });
   await waitFor(() =>
-    expect(fetchMock.calls(getTableMetadataEndpoint)).toHaveLength(1),
+    expect(fetchMock.callHistory.calls(getTableMetadataEndpoint)).toHaveLength(
+      1,
+    ),
   );
   expect(queryByText(`Indexes (${table.indexes.length})`)).toBeInTheDocument();
 });
@@ -126,12 +128,14 @@ test('renders preview', async () => {
     },
   });
   await waitFor(() =>
-    expect(fetchMock.calls(getTableMetadataEndpoint)).toHaveLength(1),
+    expect(fetchMock.callHistory.calls(getTableMetadataEndpoint)).toHaveLength(
+      1,
+    ),
   );
-  expect(fetchMock.calls(fetchPreviewEndpoint)).toHaveLength(0);
+  expect(fetchMock.callHistory.calls(fetchPreviewEndpoint)).toHaveLength(0);
   fireEvent.click(getByText('Data preview'));
   await waitFor(() =>
-    expect(fetchMock.calls(fetchPreviewEndpoint)).toHaveLength(1),
+    expect(fetchMock.callHistory.calls(fetchPreviewEndpoint)).toHaveLength(1),
   );
 });
 
@@ -142,13 +146,17 @@ describe('table actions', () => {
       initialState,
     });
     await waitFor(() =>
-      expect(fetchMock.calls(getTableMetadataEndpoint)).toHaveLength(1),
+      expect(
+        fetchMock.callHistory.calls(getTableMetadataEndpoint),
+      ).toHaveLength(1),
     );
     const menuButton = getByRole('button', { name: /Table actions/i });
     fireEvent.click(menuButton);
     fireEvent.click(getByText('Refresh table schema'));
     await waitFor(() =>
-      expect(fetchMock.calls(getTableMetadataEndpoint)).toHaveLength(2),
+      expect(
+        fetchMock.callHistory.calls(getTableMetadataEndpoint),
+      ).toHaveLength(2),
     );
   });
 
@@ -158,7 +166,9 @@ describe('table actions', () => {
       initialState,
     });
     await waitFor(() =>
-      expect(fetchMock.calls(getTableMetadataEndpoint)).toHaveLength(1),
+      expect(
+        fetchMock.callHistory.calls(getTableMetadataEndpoint),
+      ).toHaveLength(1),
     );
     const menuButton = getByRole('button', { name: /Table actions/i });
     fireEvent.click(menuButton);

@@ -105,11 +105,11 @@ const testEchart = (
     cy.wrap($canvas).trigger(
       'mouseover',
       drillClickCoordinates[0][0],
-      drillClickCoordinates[0][1],
+      drillClickCoordinates[0].options,
     );
     cy.wrap($canvas).rightclick(
       drillClickCoordinates[0][0],
-      drillClickCoordinates[0][1],
+      drillClickCoordinates[0].options,
     );
 
     drillBy('state').then(intercepted => {
@@ -152,11 +152,11 @@ const testEchart = (
       cy.wrap($canvas).trigger(
         'mouseover',
         drillClickCoordinates[1][0],
-        drillClickCoordinates[1][1],
+        drillClickCoordinates[1].options,
       );
       cy.wrap($canvas).rightclick(
         drillClickCoordinates[1][0],
-        drillClickCoordinates[1][1],
+        drillClickCoordinates[1].options,
       );
 
       drillBy(furtherDrillDimension).then(intercepted => {

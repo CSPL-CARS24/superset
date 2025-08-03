@@ -66,7 +66,7 @@ describe('DownloadScreenshot component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useRealTimers();
-    fetchMock.restore();
+    fetchMock.clearHistory();
   });
 
   afterAll(() => {
@@ -200,7 +200,7 @@ describe('DownloadScreenshot component', () => {
 
     await waitFor(() => {
       expect(
-        fetchMock.calls(
+        fetchMock.callHistory.calls(
           `glob:*/api/v1/dashboard/${props.dashboardId}/screenshot/mocked_cache_key/?download_format=pdf`,
         ).length,
       ).toBe(1);

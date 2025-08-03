@@ -318,7 +318,7 @@ describe('DatabaseModal', () => {
     jest.clearAllMocks();
   });
   afterEach(() => {
-    fetchMock.restore();
+    fetchMock.clearHistory();
   });
 
   const setup = (propsOverwrite: Partial<DatabaseModalProps> = {}) =>
@@ -1373,7 +1373,9 @@ describe('DatabaseModal', () => {
         expect(connectButton).toBeEnabled();
         userEvent.click(connectButton);
         await waitFor(() => {
-          expect(fetchMock.calls(VALIDATE_PARAMS_ENDPOINT).length).toEqual(5);
+          expect(
+            fetchMock.callHistory.calls(VALIDATE_PARAMS_ENDPOINT).length,
+          ).toEqual(5);
         });
       });
     });

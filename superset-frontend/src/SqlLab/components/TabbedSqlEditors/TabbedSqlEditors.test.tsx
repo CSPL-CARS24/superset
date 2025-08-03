@@ -52,7 +52,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  fetchMock.reset();
+  fetchMock.clearHistory();
   pathStub.mockReset();
 });
 
@@ -83,10 +83,10 @@ describe('componentDidMount', () => {
     );
     await waitFor(() =>
       expect(
-        fetchMock.calls(`glob:*/api/v1/sqllab/permalink/kv:${id}`),
+        fetchMock.callHistory.calls(`glob:*/api/v1/sqllab/permalink/kv:${id}`),
       ).toHaveLength(1),
     );
-    fetchMock.reset();
+    fetchMock.clearHistory();
   });
   test('should handle permalink', async () => {
     const key = '9sadkfl';
@@ -99,7 +99,7 @@ describe('componentDidMount', () => {
     setup(store);
     await waitFor(() =>
       expect(
-        fetchMock.calls(`glob:*/api/v1/sqllab/permalink/${key}`),
+        fetchMock.callHistory.calls(`glob:*/api/v1/sqllab/permalink/${key}`),
       ).toHaveLength(1),
     );
     expect(replaceState).toHaveBeenCalledWith(
@@ -107,7 +107,7 @@ describe('componentDidMount', () => {
       expect.anything(),
       '/sqllab',
     );
-    fetchMock.reset();
+    fetchMock.clearHistory();
   });
   test('should handle savedQueryId', () => {
     uriStub.mockReturnValue({ savedQueryId: 1 });

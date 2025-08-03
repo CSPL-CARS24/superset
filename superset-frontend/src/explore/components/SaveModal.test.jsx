@@ -117,7 +117,7 @@ beforeAll(() => {
   });
 });
 
-afterAll(() => fetchMock.restore());
+afterAll(() => fetchMock.clearHistory());
 
 const setup = (props = defaultProps, store = initialStore) =>
   render(<SaveModal {...props} />, {
@@ -275,9 +275,9 @@ test('updates slice name and selected dashboard', async () => {
     }),
   );
   await waitFor(() =>
-    expect(fetchMock.calls(fetchDashboardEndpoint)).toHaveLength(1),
+    expect(fetchMock.callHistory.calls(fetchDashboardEndpoint)).toHaveLength(1),
   );
-  expect(fetchMock.calls(fetchDashboardEndpoint)[0][0]).toEqual(
+  expect(fetchMock.callHistory.calls(fetchDashboardEndpoint)[0][0]).toEqual(
     expect.stringContaining(`dashboard/${dashboardId}`),
   );
   expect(createSlice).toHaveBeenCalledWith(

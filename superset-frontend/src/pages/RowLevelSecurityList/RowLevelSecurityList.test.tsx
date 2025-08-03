@@ -121,14 +121,14 @@ describe('RuleList RTL', () => {
   });
 
   it('fetched data', async () => {
-    fetchMock.resetHistory();
+    fetchMock.clearHistory();
     await renderAndWait();
-    const apiCalls = fetchMock.calls(/rowlevelsecurity\/\?q/);
+    const apiCalls = fetchMock.callHistory.calls(/rowlevelsecurity\/\?q/);
     expect(apiCalls).toHaveLength(1);
     expect(apiCalls[0][0]).toMatchInlineSnapshot(
       `"http://localhost/api/v1/rowlevelsecurity/?q=(order_column:changed_on_delta_humanized,order_direction:desc,page:0,page_size:25)"`,
     );
-    fetchMock.resetHistory();
+    fetchMock.clearHistory();
   });
 
   it('renders add rule button on empty state', async () => {

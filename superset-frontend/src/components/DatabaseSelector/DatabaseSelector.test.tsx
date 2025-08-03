@@ -192,7 +192,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  fetchMock.reset();
+  fetchMock.clearHistory();
   act(() => {
     store.dispatch(api.util.resetApiState());
   });
@@ -209,7 +209,7 @@ test('Refresh should work', async () => {
 
   render(<DatabaseSelector {...props} />, { useRedux: true, store });
 
-  expect(fetchMock.calls(schemaApiRoute).length).toBe(0);
+  expect(fetchMock.callHistory.calls(schemaApiRoute).length).toBe(0);
 
   const select = screen.getByRole('combobox', {
     name: 'Select schema or type to search schemas: public',
@@ -218,8 +218,8 @@ test('Refresh should work', async () => {
   await userEvent.click(select);
 
   await waitFor(() => {
-    expect(fetchMock.calls(databaseApiRoute).length).toBe(1);
-    expect(fetchMock.calls(schemaApiRoute).length).toBe(1);
+    expect(fetchMock.callHistory.calls(databaseApiRoute).length).toBe(1);
+    expect(fetchMock.callHistory.calls(schemaApiRoute).length).toBe(1);
     expect(props.handleError).toHaveBeenCalledTimes(0);
     expect(props.onDbChange).toHaveBeenCalledTimes(0);
     expect(props.onSchemaChange).toHaveBeenCalledTimes(0);
@@ -229,8 +229,8 @@ test('Refresh should work', async () => {
   await userEvent.click(screen.getByRole('button', { name: 'sync' }));
 
   await waitFor(() => {
-    expect(fetchMock.calls(databaseApiRoute).length).toBe(1);
-    expect(fetchMock.calls(schemaApiRoute).length).toBe(2);
+    expect(fetchMock.callHistory.calls(databaseApiRoute).length).toBe(1);
+    expect(fetchMock.callHistory.calls(schemaApiRoute).length).toBe(2);
     expect(props.handleError).toHaveBeenCalledTimes(0);
     expect(props.onDbChange).toHaveBeenCalledTimes(0);
     expect(props.onSchemaChange).toHaveBeenCalledTimes(0);
@@ -288,18 +288,20 @@ test('Should fetch the search keyword when total count exceeds initial options',
     name: 'Select database or type to search databases',
   });
   await waitFor(() =>
-    expect(fetchMock.calls(databaseApiRoute)).toHaveLength(1),
+    expect(fetchMock.callHistory.calls(databaseApiRoute)).toHaveLength(1),
   );
   expect(select).toBeInTheDocument();
   await userEvent.type(select, 'keywordtest');
   await waitFor(() =>
-    expect(fetchMock.calls(databaseApiRoute)).toHaveLength(2),
+    expect(fetchMock.callHistory.calls(databaseApiRoute)).toHaveLength(2),
   );
-  expect(fetchMock.calls(databaseApiRoute)[1][0]).toContain('keywordtest');
+  expect(fetchMock.callHistory.calls(databaseApiRoute)[1][0]).toContain(
+    'keywordtest',
+  );
 });
 
 test('should show empty state if there are no options', async () => {
-  fetchMock.reset();
+  fetchMock.clearHistory();
   fetchMock.get(databaseApiRoute, { result: [] });
   fetchMock.get(schemaApiRoute, { result: [] });
   fetchMock.get(tablesApiRoute, { result: [] });
@@ -367,7 +369,9 @@ test('Sends the correct schema when changing the schema', async () => {
     useRedux: true,
     store,
   });
-  await waitFor(() => expect(fetchMock.calls(databaseApiRoute).length).toBe(1));
+  await waitFor(() =>
+    expect(fetchMock.callHistory.calls(databaseApiRoute).length).toBe(1),
+  );
   rerender(<DatabaseSelector {...props} />);
   expect(props.onSchemaChange).toHaveBeenCalledTimes(0);
   const select = screen.getByRole('combobox', {

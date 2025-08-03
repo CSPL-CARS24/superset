@@ -49,8 +49,8 @@ test('messages should only be inserted in the State when the component is mounte
   );
   const fistRender = store.getState().messageToasts;
   expect(fistRender).toHaveLength(2);
-  expect(fistRender[1].text).toBe(messages[0][1]);
-  expect(fistRender[0].text).toBe(messages[1][1]);
+  expect(fistRender[1].text).toBe(messages[0].options);
+  expect(fistRender[0].text).toBe(messages[1].options);
 
   rerender(
     <Provider store={store}>

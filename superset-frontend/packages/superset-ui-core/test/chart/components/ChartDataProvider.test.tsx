@@ -100,7 +100,7 @@ describe('ChartDataProvider', () => {
       const options = { host: 'override' };
       setup({ formDataRequestOptions: options });
       expect(mockLoadFormData).toHaveBeenCalledTimes(1);
-      expect(mockLoadFormData.mock.calls[0][1]).toEqual(options);
+      expect(mockLoadFormData.mock.calls[0].options).toEqual(options);
     });
 
     it('calls ChartClient.loadFormData when formData or sliceId change', async () => {
@@ -142,7 +142,7 @@ describe('ChartDataProvider', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
       expect(mockLoadDatasource).toHaveBeenCalledTimes(1);
-      expect(mockLoadDatasource.mock.calls[0][1]).toEqual(options);
+      expect(mockLoadDatasource.mock.calls[0].options).toEqual(options);
     });
 
     it('calls ChartClient.loadDatasource if loadDatasource is true and formData or sliceId change', async () => {

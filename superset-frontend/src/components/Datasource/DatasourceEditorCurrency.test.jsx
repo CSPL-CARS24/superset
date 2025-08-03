@@ -32,11 +32,11 @@ const fastRender = props =>
 
 describe('DatasourceEditor Currency Tests', () => {
   beforeEach(() => {
-    fetchMock.get(DATASOURCE_ENDPOINT, [], { overwriteRoutes: true });
+    fetchMock.get(DATASOURCE_ENDPOINT, []);
   });
 
   afterEach(() => {
-    fetchMock.restore();
+    fetchMock.clearHistory();
   });
 
   // The problematic test, now optimized

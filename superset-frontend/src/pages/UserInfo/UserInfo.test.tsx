@@ -72,7 +72,7 @@ describe('UserInfo', () => {
     });
 
   beforeEach(() => {
-    fetchMock.restore();
+    fetchMock.clearHistory();
     fetchMock.get(meEndpoint, {
       result: {
         ...mockUser,
@@ -83,7 +83,7 @@ describe('UserInfo', () => {
   });
 
   afterEach(() => {
-    fetchMock.restore();
+    fetchMock.clearHistory();
   });
 
   it('renders the user info page', async () => {

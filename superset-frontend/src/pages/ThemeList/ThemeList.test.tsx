@@ -101,7 +101,7 @@ const renderThemesList = (props = {}) =>
 
 describe('ThemesList', () => {
   beforeEach(() => {
-    fetchMock.resetHistory();
+    fetchMock.clearHistory();
   });
 
   it('renders', async () => {
@@ -173,7 +173,7 @@ describe('ThemesList', () => {
     renderThemesList();
 
     await waitFor(() => {
-      const calls = fetchMock.calls(/api\/v1\/theme\/\?/);
+      const calls = fetchMock.callHistory.calls(/api\/v1\/theme\/\?/);
       expect(calls.length).toBeGreaterThan(0);
     });
   });

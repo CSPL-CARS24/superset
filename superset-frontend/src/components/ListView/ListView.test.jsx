@@ -132,13 +132,13 @@ const factory = (props = mockedProps) =>
 
 describe('ListView', () => {
   beforeEach(() => {
-    fetchMock.reset();
+    fetchMock.clearHistory();
     jest.clearAllMocks();
     factory();
   });
 
   afterEach(() => {
-    fetchMock.reset();
+    fetchMock.clearHistory();
     mockedProps.fetchData.mockClear();
     mockedProps.bulkActions.forEach(ba => {
       ba.onSelect.mockClear();

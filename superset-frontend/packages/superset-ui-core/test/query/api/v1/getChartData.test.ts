@@ -22,7 +22,7 @@ import setupClientForTest from '../setupClientForTest';
 
 describe('API v1 > getChartData()', () => {
   beforeAll(() => setupClientForTest());
-  afterEach(() => fetchMock.restore());
+  afterEach(() => fetchMock.clearHistory());
 
   it('returns a promise of ChartDataResponse', async () => {
     const response = {

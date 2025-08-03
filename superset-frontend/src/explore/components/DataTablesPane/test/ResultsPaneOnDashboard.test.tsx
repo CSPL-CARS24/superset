@@ -90,7 +90,7 @@ describe('ResultsPaneOnDashboard', () => {
   const setForceQuery = jest.spyOn(exploreActions, 'setForceQuery');
 
   afterAll(() => {
-    fetchMock.reset();
+    fetchMock.clearHistory();
     jest.resetAllMocks();
   });
 

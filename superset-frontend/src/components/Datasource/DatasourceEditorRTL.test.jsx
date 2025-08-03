@@ -26,12 +26,12 @@ import {
 
 describe('DatasourceEditor RTL Metrics Tests', () => {
   beforeEach(() => {
-    fetchMock.get(DATASOURCE_ENDPOINT, [], { overwriteRoutes: true });
+    fetchMock.get(DATASOURCE_ENDPOINT, []);
     jest.clearAllMocks();
   });
 
   afterEach(() => {
-    fetchMock.restore();
+    fetchMock.clearHistory();
   });
 
   it('properly renders the metric information', async () => {
@@ -84,12 +84,12 @@ describe('DatasourceEditor RTL Metrics Tests', () => {
 
 describe('DatasourceEditor RTL Columns Tests', () => {
   beforeEach(() => {
-    fetchMock.get(DATASOURCE_ENDPOINT, [], { overwriteRoutes: true });
+    fetchMock.get(DATASOURCE_ENDPOINT, []);
     jest.clearAllMocks();
   });
 
   afterEach(() => {
-    fetchMock.restore();
+    fetchMock.clearHistory();
   });
 
   it('shows the default datetime column', async () => {

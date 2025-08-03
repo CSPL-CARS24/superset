@@ -71,7 +71,7 @@ const setup = (dashboardInfoOverride: Partial<DashboardInfo> = {}) =>
   );
 
 beforeEach(() => {
-  fetchMock.restore();
+  fetchMock.clearHistory();
 });
 
 test('Dropdown trigger renders', async () => {

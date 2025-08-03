@@ -85,7 +85,7 @@ describe('GroupsList', () => {
   };
 
   beforeEach(() => {
-    fetchMock.resetHistory();
+    fetchMock.clearHistory();
   });
 
   it('renders the page', async () => {
@@ -96,7 +96,9 @@ describe('GroupsList', () => {
   it('fetches roles on load', async () => {
     await renderComponent();
     await waitFor(() => {
-      expect(fetchMock.calls(rolesEndpoint).length).toBeGreaterThan(0);
+      expect(fetchMock.callHistory.calls(rolesEndpoint).length).toBeGreaterThan(
+        0,
+      );
     });
   });
 

@@ -23,7 +23,7 @@ import setupClientForTest from '../setupClientForTest';
 
 describe('makeApi()', () => {
   beforeAll(() => setupClientForTest());
-  afterEach(() => fetchMock.restore());
+  afterEach(() => fetchMock.clearHistory());
 
   it('should expose method and endpoint', () => {
     const api = makeApi({
@@ -95,7 +95,8 @@ describe('makeApi()', () => {
 
     const expected = new FormData();
     expected.append('request', JSON.stringify('test'));
-    const received = fetchMock.lastOptions()?.body as FormData;
+    const received = fetchMock.callHistory.lastCall()?.options
+      ?.body as FormData;
 
     expect(received).toBeInstanceOf(FormData);
     expect(received.get('request')).toEqual(expected.get('request'));
@@ -109,7 +110,7 @@ describe('makeApi()', () => {
     });
     fetchMock.get('glob:*/test-get-search*', { search: 'get' });
     await api({ p1: 1, p2: 2, p3: [1, 2] });
-    expect(fetchMock.lastUrl()).toContain(
+    expect(fetchMock.callHistory.lastCall()?.url || '').toContain(
       '/test-get-search?p1=1&p2=2&p3=1%2C2',
     );
   });
@@ -123,7 +124,7 @@ describe('makeApi()', () => {
     });
     fetchMock.get('glob:*/test-post-search*', { rison: 'get' });
     await api({ p1: 1, p3: [1, 2] });
-    expect(fetchMock.lastUrl()).toContain(
+    expect(fetchMock.callHistory.lastCall()?.url || '').toContain(
       '/test-post-search?q=(p1:1,p3:!(1,2))',
     );
   });
@@ -137,7 +138,9 @@ describe('makeApi()', () => {
     });
     fetchMock.post('glob:*/test-post-search*', { search: 'post' });
     await api({ p1: 1, p3: [1, 2] });
-    expect(fetchMock.lastUrl()).toContain('/test-post-search?p1=1&p3=1%2C2');
+    expect(fetchMock.callHistory.lastCall()?.url || '').toContain(
+      '/test-post-search?p1=1&p3=1%2C2',
+    );
   });
 
   it('should throw when requestType is invalid', () => {
@@ -215,6 +218,8 @@ describe('makeApi()', () => {
     fetchMock.delete('glob:*/test-raw-response?*', 'ok');
     const result = await api({ field1: 11 }, {});
     expect(result).toEqual(200);
-    expect(fetchMock.lastUrl()).toContain('/test-raw-response?field1=11');
+    expect(fetchMock.callHistory.lastCall()?.url || '').toContain(
+      '/test-raw-response?field1=11',
+    );
   });
 });

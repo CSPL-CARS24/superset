@@ -46,7 +46,7 @@ const expectedQueryEditor = {
 };
 
 afterEach(() => {
-  fetchMock.reset();
+  fetchMock.clearHistory();
   act(() => {
     store.dispatch(api.util.resetApiState());
   });
@@ -70,9 +70,11 @@ test('puts api request with formData', async () => {
     });
   });
   await waitFor(() =>
-    expect(fetchMock.calls(tabStateMutationApiRoute).length).toBe(1),
+    expect(fetchMock.callHistory.calls(tabStateMutationApiRoute).length).toBe(
+      1,
+    ),
   );
-  const formData = fetchMock.calls(tabStateMutationApiRoute)[0][1]
+  const formData = fetchMock.callHistory.calls(tabStateMutationApiRoute)[0].options
     ?.body as FormData;
   expect(formData.get('database_id')).toBe(`${expectedQueryEditor.dbId}`);
   expect(formData.get('schema')).toBe(
@@ -118,7 +120,9 @@ test('posts activate request with queryEditorId', async () => {
     result.current[0](expectedQueryEditor.id);
   });
   await waitFor(() =>
-    expect(fetchMock.calls(tabStateMutationApiRoute).length).toBe(1),
+    expect(fetchMock.callHistory.calls(tabStateMutationApiRoute).length).toBe(
+      1,
+    ),
   );
 });
 
@@ -138,6 +142,8 @@ test('deletes destoryed query editors', async () => {
     result.current[0](expectedQueryEditor.id);
   });
   await waitFor(() =>
-    expect(fetchMock.calls(tabStateMutationApiRoute).length).toBe(1),
+    expect(fetchMock.callHistory.calls(tabStateMutationApiRoute).length).toBe(
+      1,
+    ),
   );
 });

@@ -24,7 +24,7 @@ import setupClientForTest from '../setupClientForTest';
 describe('getFormData()', () => {
   beforeAll(() => setupClientForTest());
 
-  afterEach(() => fetchMock.restore());
+  afterEach(() => fetchMock.clearHistory());
 
   it('returns datasource metadata for given datasource key', () => {
     const mockData = {

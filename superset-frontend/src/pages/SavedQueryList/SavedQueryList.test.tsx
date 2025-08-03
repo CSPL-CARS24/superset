@@ -95,7 +95,7 @@ const renderList = (props = {}, storeOverrides = {}) =>
 
 describe('SavedQueryList', () => {
   beforeEach(() => {
-    fetchMock.resetHistory();
+    fetchMock.clearHistory();
   });
 
   it('renders', async () => {
@@ -147,7 +147,9 @@ describe('SavedQueryList', () => {
 
     // Verify API call
     await waitFor(() => {
-      expect(fetchMock.calls(/saved_query\/0/, 'DELETE')).toHaveLength(1);
+      expect(
+        fetchMock.callHistory.calls(/saved_query\/0/, 'DELETE'),
+      ).toHaveLength(1);
     });
   });
 
@@ -164,7 +166,7 @@ describe('SavedQueryList', () => {
 
     // Verify API call
     await waitFor(() => {
-      const calls = fetchMock.calls(/saved_query\/\?q/);
+      const calls = fetchMock.callHistory.calls(/saved_query\/\?q/);
       expect(calls.length).toBeGreaterThan(0);
       const lastCall = calls[calls.length - 1][0];
       expect(lastCall).toContain('order_column');
@@ -175,7 +177,7 @@ describe('SavedQueryList', () => {
   it('fetches data', async () => {
     renderList();
     await waitFor(() => {
-      const calls = fetchMock.calls(/saved_query\/\?q/);
+      const calls = fetchMock.callHistory.calls(/saved_query\/\?q/);
       expect(calls).toHaveLength(1);
       expect(calls[0][0]).toContain('order_column');
       expect(calls[0][0]).toContain('page');
@@ -194,7 +196,7 @@ describe('SavedQueryList', () => {
 
     // Verify API call includes sorting
     await waitFor(() => {
-      const calls = fetchMock.calls(/saved_query\/\?q/);
+      const calls = fetchMock.callHistory.calls(/saved_query\/\?q/);
       const lastCall = calls[calls.length - 1][0];
       const url = new URL(lastCall);
       const params = new URLSearchParams(url.search);

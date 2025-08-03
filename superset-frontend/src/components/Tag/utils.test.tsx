@@ -40,11 +40,11 @@ describe('tagToSelectOption', () => {
 
 describe('loadTags', () => {
   beforeEach(() => {
-    fetchMock.reset();
+    fetchMock.clearHistory();
   });
 
   afterEach(() => {
-    fetchMock.restore();
+    fetchMock.clearHistory();
   });
 
   test('constructs correct API query with custom tag filter', async () => {
@@ -61,7 +61,7 @@ describe('loadTags', () => {
     await loadTags('analytics', 0, 25);
 
     // Verify the API was called with correct parameters
-    const calls = fetchMock.calls();
+    const calls = fetchMock.callHistory.calls();
     expect(calls).toHaveLength(1);
 
     const [url] = calls[0];
@@ -116,7 +116,7 @@ describe('loadTags', () => {
 
     await loadTags('financial-data', 0, 25);
 
-    const calls = fetchMock.calls();
+    const calls = fetchMock.callHistory.calls();
     const [url] = calls[0];
     const urlObj = new URL(url);
     const queryParam = urlObj.searchParams.get('q');
@@ -139,7 +139,7 @@ describe('loadTags', () => {
 
     await loadTags('', 2, 10);
 
-    const calls = fetchMock.calls();
+    const calls = fetchMock.callHistory.calls();
     const [url] = calls[0];
     const urlObj = new URL(url);
     const queryParam = urlObj.searchParams.get('q');
@@ -161,7 +161,7 @@ describe('loadTags', () => {
     await loadTags('search-term', 1, 50);
     await loadTags('another-search', 5, 100);
 
-    const calls = fetchMock.calls();
+    const calls = fetchMock.callHistory.calls();
 
     // Verify all calls include the custom tag filter
     calls.forEach(call => {
@@ -188,7 +188,7 @@ describe('loadTags', () => {
 
     await loadTags('test', 0, 25);
 
-    const calls = fetchMock.calls();
+    const calls = fetchMock.callHistory.calls();
     const [url] = calls[0];
     const urlObj = new URL(url);
     const queryParam = urlObj.searchParams.get('q');

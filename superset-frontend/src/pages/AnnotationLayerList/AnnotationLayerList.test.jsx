@@ -88,7 +88,7 @@ const renderAnnotationLayersList = (props = {}) =>
 
 describe('AnnotationLayersList', () => {
   beforeEach(() => {
-    fetchMock.resetHistory();
+    fetchMock.clearHistory();
   });
 
   it('renders', async () => {
@@ -120,7 +120,7 @@ describe('AnnotationLayersList', () => {
   it('fetches layers', async () => {
     renderAnnotationLayersList();
     await waitFor(() => {
-      const calls = fetchMock.calls(/annotation_layer\/\?q/);
+      const calls = fetchMock.callHistory.calls(/annotation_layer\/\?q/);
       expect(calls).toHaveLength(1);
       expect(calls[0][0]).toContain(
         'order_column:name,order_direction:desc,page:0,page_size:25',
@@ -147,7 +147,7 @@ describe('AnnotationLayersList', () => {
 
     // Wait for search API call
     await waitFor(() => {
-      const calls = fetchMock.calls(/annotation_layer\/\?q/);
+      const calls = fetchMock.callHistory.calls(/annotation_layer\/\?q/);
       const searchCall = calls.find(call =>
         call[0].includes('filters:!((col:name,opr:ct,value:foo))'),
       );
@@ -179,7 +179,9 @@ describe('AnnotationLayersList', () => {
 
     // Wait for delete request
     await waitFor(() => {
-      expect(fetchMock.calls(/annotation_layer\/0/, 'DELETE')).toHaveLength(1);
+      expect(
+        fetchMock.callHistory.calls(/annotation_layer\/0/, 'DELETE'),
+      ).toHaveLength(1);
     });
   });
 

@@ -89,7 +89,7 @@ describe('async actions', () => {
     dispatch = sinon.spy();
   });
 
-  afterEach(() => fetchMock.resetHistory());
+  afterEach(() => fetchMock.clearHistory());
 
   const fetchQueryEndpoint = 'glob:*/api/v1/sqllab/results/*';
   fetchMock.get(
@@ -114,14 +114,14 @@ describe('async actions', () => {
 
       const store = mockStore(initialState);
       return store.dispatch(actions.saveQuery(query, queryId)).then(() => {
-        expect(fetchMock.calls(saveQueryEndpoint)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(saveQueryEndpoint)).toHaveLength(1);
       });
     });
 
     it('posts the correct query object', () => {
       const store = mockStore(initialState);
       return store.dispatch(actions.saveQuery(query, queryId)).then(() => {
-        const call = fetchMock.calls(saveQueryEndpoint)[0];
+        const call = fetchMock.callHistory.calls(saveQueryEndpoint)[0];
         const formData = JSON.parse(call[1].body);
         const mappedQueryToServer = actions.convertQueryToServer(query);
 
@@ -172,7 +172,9 @@ describe('async actions', () => {
       const store = mockStore(initialState);
       store.dispatch(actions.formatQuery(query, queryId));
       await waitFor(() =>
-        expect(fetchMock.calls(formatQueryEndpoint)).toHaveLength(1),
+        expect(fetchMock.callHistory.calls(formatQueryEndpoint)).toHaveLength(
+          1,
+        ),
       );
       expect(store.getActions()[0].type).toBe(actions.QUERY_EDITOR_SET_SQL);
       expect(store.getActions()[0].sql).toBe(expectedSql);
@@ -190,7 +192,7 @@ describe('async actions', () => {
       expect.assertions(1);
 
       return makeRequest().then(() => {
-        expect(fetchMock.calls(fetchQueryEndpoint)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(fetchQueryEndpoint)).toHaveLength(1);
       });
     });
 
@@ -204,7 +206,7 @@ describe('async actions', () => {
 
     it.skip('parses large number result without losing precision', () =>
       makeRequest().then(() => {
-        expect(fetchMock.calls(fetchQueryEndpoint)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(fetchQueryEndpoint)).toHaveLength(1);
         expect(dispatch.callCount).toBe(2);
         expect(dispatch.getCall(1).lastArg.results.data.toString()).toBe(
           mockBigNumber,
@@ -258,7 +260,7 @@ describe('async actions', () => {
       expect.assertions(1);
 
       return makeRequest().then(() => {
-        expect(fetchMock.calls(runQueryEndpoint)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(runQueryEndpoint)).toHaveLength(1);
       });
     });
 
@@ -272,7 +274,7 @@ describe('async actions', () => {
 
     it.skip('parses large number result without losing precision', () =>
       makeRequest().then(() => {
-        expect(fetchMock.calls(runQueryEndpoint)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(runQueryEndpoint)).toHaveLength(1);
         expect(dispatch.callCount).toBe(2);
         expect(dispatch.getCall(1).lastArg.results.data.toString()).toBe(
           mockBigNumber,
@@ -350,7 +352,9 @@ describe('async actions', () => {
         `{ "data": ${mockBigNumber} }`,
       );
       await makeRequest().then(() => {
-        expect(fetchMock.calls(runQueryEndpointWithParams)).toHaveLength(1);
+        expect(
+          fetchMock.callHistory.calls(runQueryEndpointWithParams),
+        ).toHaveLength(1);
       });
     });
   });
@@ -389,7 +393,7 @@ describe('async actions', () => {
       expect.assertions(1);
 
       return makeRequest().then(() => {
-        expect(fetchMock.calls(stopQueryEndpoint)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(stopQueryEndpoint)).toHaveLength(1);
       });
     });
 
@@ -405,7 +409,7 @@ describe('async actions', () => {
       expect.assertions(1);
 
       return makeRequest().then(() => {
-        const call = fetchMock.calls(stopQueryEndpoint)[0];
+        const call = fetchMock.callHistory.calls(stopQueryEndpoint)[0];
         const body = JSON.parse(call[1].body);
         expect(body.client_id).toBe(baseQuery.id);
       });
@@ -740,7 +744,7 @@ describe('async actions', () => {
       isFeatureEnabled.mockRestore();
     });
 
-    afterEach(() => fetchMock.resetHistory());
+    afterEach(() => fetchMock.clearHistory());
 
     describe('addQueryEditor', () => {
       it('creates the tab state in the local storage', () => {
@@ -761,7 +765,9 @@ describe('async actions', () => {
         store.dispatch(actions.addQueryEditor(queryEditor));
 
         expect(store.getActions()).toEqual(expectedActions);
-        expect(fetchMock.calls(updateTabStateEndpoint)).toHaveLength(0);
+        expect(
+          fetchMock.callHistory.calls(updateTabStateEndpoint),
+        ).toHaveLength(0);
       });
     });
 
@@ -896,7 +902,9 @@ describe('async actions', () => {
           const request = actions.queryEditorSetAndSaveSql(queryEditor, sql);
           return request(store.dispatch, store.getState).then(() => {
             expect(store.getActions()).toEqual(expectedActions);
-            expect(fetchMock.calls(updateTabStateEndpoint)).toHaveLength(1);
+            expect(
+              fetchMock.callHistory.calls(updateTabStateEndpoint),
+            ).toHaveLength(1);
           });
         });
       });
@@ -917,7 +925,9 @@ describe('async actions', () => {
           request(store.dispatch, store.getState);
 
           expect(store.getActions()).toEqual(expectedActions);
-          expect(fetchMock.calls(updateTabStateEndpoint)).toHaveLength(0);
+          expect(
+            fetchMock.callHistory.calls(updateTabStateEndpoint),
+          ).toHaveLength(0);
           isFeatureEnabled.mockRestore();
         });
       });
@@ -1016,10 +1026,14 @@ describe('async actions', () => {
             expectedActionTypes,
           );
           expect(store.getActions()[0].prepend).toBeFalsy();
-          expect(fetchMock.calls(updateTableSchemaEndpoint)).toHaveLength(1);
+          expect(
+            fetchMock.callHistory.calls(updateTableSchemaEndpoint),
+          ).toHaveLength(1);
 
           // tab state is not updated, since no query was run
-          expect(fetchMock.calls(updateTabStateEndpoint)).toHaveLength(0);
+          expect(
+            fetchMock.callHistory.calls(updateTabStateEndpoint),
+          ).toHaveLength(0);
         });
       });
     });
@@ -1051,7 +1065,7 @@ describe('async actions', () => {
 
       afterEach(() => {
         store.clearActions();
-        fetchMock.resetHistory();
+        fetchMock.clearHistory();
       });
 
       it('updates and runs data preview query when configured', () => {
@@ -1072,9 +1086,11 @@ describe('async actions', () => {
           expect(store.getActions().map(a => a.type)).toEqual(
             expectedActionTypes,
           );
-          expect(fetchMock.calls(runQueryEndpoint)).toHaveLength(1);
+          expect(fetchMock.callHistory.calls(runQueryEndpoint)).toHaveLength(1);
           // tab state is not updated, since the query is a data preview
-          expect(fetchMock.calls(updateTabStateEndpoint)).toHaveLength(0);
+          expect(
+            fetchMock.callHistory.calls(updateTabStateEndpoint),
+          ).toHaveLength(0);
         });
       });
 
@@ -1096,9 +1112,11 @@ describe('async actions', () => {
           expect(store.getActions().map(a => a.type)).toEqual(
             expectedActionTypes,
           );
-          expect(fetchMock.calls(runQueryEndpoint)).toHaveLength(1);
+          expect(fetchMock.callHistory.calls(runQueryEndpoint)).toHaveLength(1);
           // tab state is not updated, since the query is a data preview
-          expect(fetchMock.calls(updateTabStateEndpoint)).toHaveLength(0);
+          expect(
+            fetchMock.callHistory.calls(updateTabStateEndpoint),
+          ).toHaveLength(0);
         });
       });
     });
@@ -1117,7 +1135,9 @@ describe('async actions', () => {
         ];
         return store.dispatch(actions.expandTable(table)).then(() => {
           expect(store.getActions()).toEqual(expectedActions);
-          expect(fetchMock.calls(updateTableSchemaEndpoint)).toHaveLength(1);
+          expect(
+            fetchMock.callHistory.calls(updateTableSchemaEndpoint),
+          ).toHaveLength(1);
         });
       });
     });
@@ -1136,7 +1156,9 @@ describe('async actions', () => {
         ];
         return store.dispatch(actions.collapseTable(table)).then(() => {
           expect(store.getActions()).toEqual(expectedActions);
-          expect(fetchMock.calls(updateTableSchemaEndpoint)).toHaveLength(1);
+          expect(
+            fetchMock.callHistory.calls(updateTableSchemaEndpoint),
+          ).toHaveLength(1);
         });
       });
     });
@@ -1155,7 +1177,9 @@ describe('async actions', () => {
         ];
         return store.dispatch(actions.removeTables([table])).then(() => {
           expect(store.getActions()).toEqual(expectedActions);
-          expect(fetchMock.calls(updateTableSchemaEndpoint)).toHaveLength(1);
+          expect(
+            fetchMock.callHistory.calls(updateTableSchemaEndpoint),
+          ).toHaveLength(1);
         });
       });
 
@@ -1175,7 +1199,9 @@ describe('async actions', () => {
         ];
         return store.dispatch(actions.removeTables(tables)).then(() => {
           expect(store.getActions()).toEqual(expectedActions);
-          expect(fetchMock.calls(updateTableSchemaEndpoint)).toHaveLength(2);
+          expect(
+            fetchMock.callHistory.calls(updateTableSchemaEndpoint),
+          ).toHaveLength(2);
         });
       });
 
@@ -1192,7 +1218,9 @@ describe('async actions', () => {
         ];
         return store.dispatch(actions.removeTables(tables)).then(() => {
           expect(store.getActions()).toEqual(expectedActions);
-          expect(fetchMock.calls(updateTableSchemaEndpoint)).toHaveLength(1);
+          expect(
+            fetchMock.callHistory.calls(updateTableSchemaEndpoint),
+          ).toHaveLength(1);
         });
       });
     });
@@ -1289,10 +1317,14 @@ describe('async actions', () => {
           .dispatch(actions.syncQueryEditor(oldQueryEditor))
           .then(() => {
             expect(store.getActions()).toEqual(expectedActions);
-            expect(fetchMock.calls(updateTabStateEndpoint)).toHaveLength(3);
+            expect(
+              fetchMock.callHistory.calls(updateTabStateEndpoint),
+            ).toHaveLength(3);
 
             // query editor has 2 tables loaded in the schema viewer
-            expect(fetchMock.calls(updateTableSchemaEndpoint)).toHaveLength(2);
+            expect(
+              fetchMock.callHistory.calls(updateTableSchemaEndpoint),
+            ).toHaveLength(2);
           });
       });
     });

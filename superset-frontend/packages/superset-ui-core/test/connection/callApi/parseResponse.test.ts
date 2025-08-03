@@ -27,7 +27,7 @@ describe('parseResponse()', () => {
     fetchMock.get(LOGIN_GLOB, { result: '1234' });
   });
 
-  afterAll(() => fetchMock.restore());
+  afterAll(() => fetchMock.clearHistory());
 
   const mockGetUrl = '/mock/get/url';
   const mockPostUrl = '/mock/post/url';
@@ -45,7 +45,7 @@ describe('parseResponse()', () => {
     fetchMock.get(mockNoParseUrl, new Response('test response'));
   });
 
-  afterEach(() => fetchMock.reset());
+  afterEach(() => fetchMock.clearHistory());
 
   it('returns a Promise', () => {
     const apiPromise = callApi({ url: mockGetUrl, method: 'GET' });
@@ -58,7 +58,7 @@ describe('parseResponse()', () => {
     const args = await parseResponse(
       callApi({ url: mockGetUrl, method: 'GET' }),
     );
-    expect(fetchMock.calls(mockGetUrl)).toHaveLength(1);
+    expect(fetchMock.callHistory.calls(mockGetUrl)).toHaveLength(1);
     const keys = Object.keys(args);
     expect(keys).toContain('response');
     expect(keys).toContain('json');
@@ -81,7 +81,7 @@ describe('parseResponse()', () => {
     } catch (err) {
       error = err as Error;
     } finally {
-      expect(fetchMock.calls(mockTextUrl)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(mockTextUrl)).toHaveLength(1);
       expect(error?.stack).toBeDefined();
       expect(error?.message).toContain('Unexpected token');
     }
@@ -99,7 +99,7 @@ describe('parseResponse()', () => {
       callApi({ url: mockTextParseUrl, method: 'GET' }),
       'text',
     );
-    expect(fetchMock.calls(mockTextParseUrl)).toHaveLength(1);
+    expect(fetchMock.callHistory.calls(mockTextParseUrl)).toHaveLength(1);
     const keys = Object.keys(args);
     expect(keys).toContain('response');
     expect(keys).toContain('text');
@@ -134,7 +134,7 @@ describe('parseResponse()', () => {
       callApi({ url: mockNoParseUrl, method: 'GET' }),
       'raw',
     );
-    expect(fetchMock.calls(mockNoParseUrl)).toHaveLength(2);
+    expect(fetchMock.callHistory.calls(mockNoParseUrl)).toHaveLength(2);
     expect(responseNull.bodyUsed).toBe(false);
     expect(responseRaw.bodyUsed).toBe(false);
   });
@@ -193,7 +193,7 @@ describe('parseResponse()', () => {
     } catch (err) {
       error = err as { ok: boolean; status: number };
     } finally {
-      expect(fetchMock.calls(mockNotOkayUrl)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(mockNotOkayUrl)).toHaveLength(1);
       expect(error?.ok).toBe(false);
       expect(error?.status).toBe(404);
     }

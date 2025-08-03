@@ -24,7 +24,7 @@ import { LOGIN_GLOB } from './fixtures/constants';
 describe('SupersetClient', () => {
   beforeAll(() => fetchMock.get(LOGIN_GLOB, { result: '' }));
 
-  afterAll(() => fetchMock.restore());
+  afterAll(() => fetchMock.clearHistory());
 
   afterEach(() => SupersetClient.reset());
 
@@ -108,7 +108,9 @@ describe('SupersetClient', () => {
       mockDeleteUrl,
     ];
     networkCalls.map((url: string) =>
-      expect(fetchMock.calls(url)[0][1]?.headers).toStrictEqual({
+      expect(
+        fetchMock.callHistory.calls(url)[0].options?.headers,
+      ).toStrictEqual({
         Accept: 'application/json',
         'X-CSRFToken': '1234',
       }),
@@ -137,6 +139,6 @@ describe('SupersetClient', () => {
     authenticatedSpy.mockRestore();
     csrfSpy.mockRestore();
 
-    fetchMock.reset();
+    fetchMock.clearHistory();
   });
 });

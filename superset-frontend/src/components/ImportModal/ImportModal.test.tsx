@@ -105,9 +105,11 @@ test('should POST with request header `Accept: application/json`', async () => {
   );
   fireEvent.click(getByRole('button', { name: 'Import' }));
   await waitFor(() =>
-    expect(fetchMock.calls(DATABASE_IMPORT_URL)).toHaveLength(1),
+    expect(fetchMock.callHistory.calls(DATABASE_IMPORT_URL)).toHaveLength(1),
   );
-  expect(fetchMock.calls(DATABASE_IMPORT_URL)[0][1]?.headers).toStrictEqual({
+  expect(
+    fetchMock.callHistory.calls(DATABASE_IMPORT_URL)[0].options?.headers,
+  ).toStrictEqual({
     Accept: 'application/json',
     'X-CSRFToken': '1234',
   });

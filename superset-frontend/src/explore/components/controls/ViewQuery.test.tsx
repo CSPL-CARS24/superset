@@ -87,7 +87,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.resetAllMocks();
-  fetchMock.restore();
+  fetchMock.clearHistory();
 });
 
 const getFormatSwitch = () =>
@@ -100,7 +100,7 @@ test('renders the component with Formatted SQL and buttons', async () => {
   expect(screen.getByText('View in SQL Lab')).toBeInTheDocument();
 
   await waitFor(() =>
-    expect(fetchMock.calls(formatSqlEndpoint)).toHaveLength(1),
+    expect(fetchMock.callHistory.calls(formatSqlEndpoint)).toHaveLength(1),
   );
 
   expect(container).toHaveTextContent(formattedSQL);
@@ -121,7 +121,7 @@ test('shows the original SQL when Format switch is unchecked', async () => {
   const formatButton = getFormatSwitch();
 
   await waitFor(() =>
-    expect(fetchMock.calls(formatSqlEndpoint)).toHaveLength(1),
+    expect(fetchMock.callHistory.calls(formatSqlEndpoint)).toHaveLength(1),
   );
 
   fireEvent.click(formatButton);
@@ -134,7 +134,7 @@ test('toggles back to formatted SQL when Format switch is clicked', async () => 
   const formatButton = getFormatSwitch();
 
   await waitFor(() =>
-    expect(fetchMock.calls(formatSqlEndpoint)).toHaveLength(1),
+    expect(fetchMock.callHistory.calls(formatSqlEndpoint)).toHaveLength(1),
   );
 
   // Click to format SQL

@@ -116,7 +116,7 @@ beforeEach(() => {
     .post(CHART_DATA_ENDPOINT, { body: {} }, {})
     .post(FORM_DATA_KEY_ENDPOINT, { key: '123' });
 });
-afterEach(() => fetchMock.restore());
+afterEach(() => fetchMock.clearHistory());
 
 test('should render the title', async () => {
   await renderModal();

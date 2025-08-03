@@ -94,7 +94,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  fetchMock.restore();
+  fetchMock.clearHistory();
 });
 
 // Helper function to get common elements
@@ -468,7 +468,7 @@ describe('UploadDataModal - Form Submission', () => {
     await waitFor(() => fetchMock.called('glob:*api/v1/database/1/upload/'), {
       timeout: 10000,
     });
-    return fetchMock.calls('glob:*api/v1/database/1/upload/')[0];
+    return fetchMock.callHistory.calls('glob:*api/v1/database/1/upload/')[0];
   };
 
   test('CSV form submission', async () => {

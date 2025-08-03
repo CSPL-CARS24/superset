@@ -399,8 +399,10 @@ describe('SqlEditor', () => {
       // click button
       fireEvent.click(button);
       await waitFor(() => {
-        expect(fetchMock.lastUrl()).toEqual(estimateApi);
-        expect(fetchMock.lastOptions()).toEqual(
+        expect(fetchMock.callHistory.lastCall()?.url || '').toEqual(
+          estimateApi,
+        );
+        expect(fetchMock.callHistory.lastCall()?.options).toEqual(
           expect.objectContaining({
             body: JSON.stringify({
               database_id: 2023,
@@ -452,10 +454,12 @@ describe('SqlEditor', () => {
       const indicator = getByTestId('sqlEditor-loading');
       expect(indicator).toBeInTheDocument();
       await waitFor(() =>
-        expect(fetchMock.calls('glob:*/tabstateview/*').length).toBe(1),
+        expect(
+          fetchMock.callHistory.calls('glob:*/tabstateview/*').length,
+        ).toBe(1),
       );
       // it will be called from EditorAutoSync
-      expect(fetchMock.calls(switchTabApi).length).toBe(0);
+      expect(fetchMock.callHistory.calls(switchTabApi).length).toBe(0);
     });
   });
 });

@@ -81,18 +81,15 @@ describe('ShareSqlLabQuery', () => {
   const storeQueryMockId = 'ci39c3';
 
   beforeEach(async () => {
-    fetchMock.post(
-      storeQueryUrl,
-      () => ({ key: storeQueryMockId, url: `/p/${storeQueryMockId}` }),
-      {
-        overwriteRoutes: true,
-      },
-    );
-    fetchMock.resetHistory();
+    fetchMock.post(storeQueryUrl, () => ({
+      key: storeQueryMockId,
+      url: `/p/${storeQueryMockId}`,
+    }));
+    fetchMock.clearHistory();
     jest.clearAllMocks();
   });
 
-  afterAll(() => fetchMock.reset());
+  afterAll(() => fetchMock.clearHistory());
 
   describe('via permalink api', () => {
     beforeAll(() => {
@@ -114,10 +111,12 @@ describe('ShareSqlLabQuery', () => {
       const expected = omit(mockQueryEditor, ['id', 'remoteId']);
       userEvent.click(button);
       await waitFor(() =>
-        expect(fetchMock.calls(storeQueryUrl)).toHaveLength(1),
+        expect(fetchMock.callHistory.calls(storeQueryUrl)).toHaveLength(1),
       );
       expect(
-        JSON.parse(fetchMock.calls(storeQueryUrl)[0][1]?.body as string),
+        JSON.parse(
+          fetchMock.callHistory.calls(storeQueryUrl)[0].options?.body as string,
+        ),
       ).toEqual(expected);
     });
 
@@ -138,10 +137,12 @@ describe('ShareSqlLabQuery', () => {
       const expected = omit(unsavedQueryEditor, ['id']);
       userEvent.click(button);
       await waitFor(() =>
-        expect(fetchMock.calls(storeQueryUrl)).toHaveLength(1),
+        expect(fetchMock.callHistory.calls(storeQueryUrl)).toHaveLength(1),
       );
       expect(
-        JSON.parse(fetchMock.calls(storeQueryUrl)[0][1]?.body as string),
+        JSON.parse(
+          fetchMock.callHistory.calls(storeQueryUrl)[0].options?.body as string,
+        ),
       ).toEqual(expected);
     });
   });

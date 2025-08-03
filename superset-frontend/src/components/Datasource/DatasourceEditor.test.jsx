@@ -68,7 +68,7 @@ describe('DatasourceEditor', () => {
     jest.clearAllMocks();
   });
   beforeEach(async () => {
-    fetchMock.get(DATASOURCE_ENDPOINT, [], { overwriteRoutes: true });
+    fetchMock.get(DATASOURCE_ENDPOINT, []);
     await asyncRender({
       ...props,
       datasource: { ...props.datasource, table_name: 'Vehicle Sales +' },
@@ -76,7 +76,7 @@ describe('DatasourceEditor', () => {
   });
 
   afterEach(() => {
-    fetchMock.restore();
+    fetchMock.clearHistory();
     // jest.clearAllMocks();
   });
 
@@ -201,7 +201,7 @@ describe('DatasourceEditor Source Tab', () => {
   });
 
   beforeEach(async () => {
-    fetchMock.get(DATASOURCE_ENDPOINT, [], { overwriteRoutes: true });
+    fetchMock.get(DATASOURCE_ENDPOINT, []);
     await asyncRender({
       ...props,
       datasource: { ...props.datasource, table_name: 'Vehicle Sales +' },
@@ -209,7 +209,7 @@ describe('DatasourceEditor Source Tab', () => {
   });
 
   afterEach(() => {
-    fetchMock.restore();
+    fetchMock.clearHistory();
   });
 
   afterAll(() => {

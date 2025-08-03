@@ -158,9 +158,13 @@ describe('Rule modal', () => {
     await renderAndWait(addNewRuleDefaultProps);
     const title = screen.getByText('Add Rule');
     expect(title).toBeInTheDocument();
-    expect(fetchMock.calls(getRuleEndpoint)).toHaveLength(0);
-    expect(fetchMock.calls(getRelatedTablesEndpoint)).toHaveLength(0);
-    expect(fetchMock.calls(getRelatedRolesEndpoint)).toHaveLength(0);
+    expect(fetchMock.callHistory.calls(getRuleEndpoint)).toHaveLength(0);
+    expect(fetchMock.callHistory.calls(getRelatedTablesEndpoint)).toHaveLength(
+      0,
+    );
+    expect(fetchMock.callHistory.calls(getRelatedRolesEndpoint)).toHaveLength(
+      0,
+    );
   });
 
   it('Sets correct title for editing existing rule', async () => {
@@ -176,9 +180,13 @@ describe('Rule modal', () => {
     });
     const title = screen.getByText('Edit Rule');
     expect(title).toBeInTheDocument();
-    expect(fetchMock.calls(getRuleEndpoint)).toHaveLength(1);
-    expect(fetchMock.calls(getRelatedTablesEndpoint)).toHaveLength(0);
-    expect(fetchMock.calls(getRelatedRolesEndpoint)).toHaveLength(0);
+    expect(fetchMock.callHistory.calls(getRuleEndpoint)).toHaveLength(1);
+    expect(fetchMock.callHistory.calls(getRelatedTablesEndpoint)).toHaveLength(
+      0,
+    );
+    expect(fetchMock.callHistory.calls(getRelatedRolesEndpoint)).toHaveLength(
+      0,
+    );
   });
 
   it('Fills correct values when editing rule', async () => {
@@ -263,7 +271,7 @@ describe('Rule modal', () => {
 
     await waitFor(
       () => {
-        expect(fetchMock.calls(postRuleEndpoint)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(postRuleEndpoint)).toHaveLength(1);
       },
       { timeout: 10000 },
     );
@@ -284,7 +292,7 @@ describe('Rule modal', () => {
 
     await waitFor(
       () => {
-        const allCalls = fetchMock.calls(putRuleEndpoint);
+        const allCalls = fetchMock.callHistory.calls(putRuleEndpoint);
         // Find the PUT request among all calls
         const putCall = allCalls.find(call => call[1]?.method === 'PUT');
         expect(putCall).toBeTruthy();

@@ -69,14 +69,14 @@ describe('chart actions', () => {
   let fakeMetadata;
 
   const setupDefaultFetchMock = () => {
-    fetchMock.post(MOCK_URL, { json: {} }, { overwriteRoutes: true });
+    fetchMock.post(MOCK_URL, { json: {} });
   };
 
   beforeAll(() => {
     setupDefaultFetchMock();
   });
 
-  afterAll(() => fetchMock.restore());
+  afterAll(() => fetchMock.clearHistory());
 
   beforeEach(() => {
     dispatch = sinon.spy();
@@ -113,7 +113,7 @@ describe('chart actions', () => {
     getExploreUrlStub.restore();
     getChartDataUriStub.restore();
     buildV1ChartDataPayloadStub.restore();
-    fetchMock.resetHistory();
+    fetchMock.clearHistory();
     waitForAsyncDataStub.restore();
 
     global.featureFlags = {
@@ -130,8 +130,8 @@ describe('chart actions', () => {
       const actionThunk = actions.postChartFormData({}, null);
       await actionThunk(dispatch, mockGetState);
 
-      expect(fetchMock.calls(MOCK_URL)).toHaveLength(1);
-      expect(fetchMock.calls(MOCK_URL)[0][1].body).toBe(
+      expect(fetchMock.callHistory.calls(MOCK_URL)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(MOCK_URL)[0].options.body).toBe(
         JSON.stringify({
           some_param: 'fake query!',
           result_type: 'full',
@@ -156,7 +156,7 @@ describe('chart actions', () => {
         formData: fakeMetadata,
       });
 
-      expect(fetchMock.calls(mockBigIntUrl)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(mockBigIntUrl)).toHaveLength(1);
       expect(json.value.toString()).toEqual(expectedBigNumber);
     });
 
@@ -202,7 +202,7 @@ describe('chart actions', () => {
       return actionThunk(dispatch, mockGetState).then(() => {
         // chart update, trigger query, update form data, success
         expect(dispatch.callCount).toBe(5);
-        expect(fetchMock.calls(MOCK_URL)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(MOCK_URL)).toHaveLength(1);
         expect(dispatch.args[0][0].type).toBe(actions.CHART_UPDATE_STARTED);
       });
     });
@@ -212,7 +212,7 @@ describe('chart actions', () => {
       return actionThunk(dispatch, mockGetState).then(() => {
         // chart update, trigger query, update form data, success
         expect(dispatch.callCount).toBe(5);
-        expect(fetchMock.calls(MOCK_URL)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(MOCK_URL)).toHaveLength(1);
         expect(dispatch.args[1][0].type).toBe(actions.TRIGGER_QUERY);
       });
     });
@@ -222,7 +222,7 @@ describe('chart actions', () => {
       return actionThunk(dispatch, mockGetState).then(() => {
         // chart update, trigger query, update form data, success
         expect(dispatch.callCount).toBe(5);
-        expect(fetchMock.calls(MOCK_URL)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(MOCK_URL)).toHaveLength(1);
         expect(dispatch.args[2][0].type).toBe(actions.UPDATE_QUERY_FORM_DATA);
       });
     });
@@ -232,7 +232,7 @@ describe('chart actions', () => {
       return actionThunk(dispatch, mockGetState).then(() => {
         // chart update, trigger query, update form data, success
         expect(dispatch.callCount).toBe(5);
-        expect(fetchMock.calls(MOCK_URL)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(MOCK_URL)).toHaveLength(1);
         expect(typeof dispatch.args[3][0]).toBe('function');
 
         dispatch.args[3][0](dispatch);
@@ -246,7 +246,7 @@ describe('chart actions', () => {
       return actionThunk(dispatch, mockGetState).then(() => {
         // chart update, trigger query, update form data, success
         expect(dispatch.callCount).toBe(5);
-        expect(fetchMock.calls(MOCK_URL)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(MOCK_URL)).toHaveLength(1);
         expect(dispatch.args[4][0].type).toBe(actions.CHART_UPDATE_SUCCEEDED);
       });
     });
@@ -262,7 +262,7 @@ describe('chart actions', () => {
 
       return actionThunk(dispatch, mockGetState).then(() => {
         // chart update, trigger query, update form data, fail
-        expect(fetchMock.calls(MOCK_URL)).toHaveLength(1);
+        expect(fetchMock.callHistory.calls(MOCK_URL)).toHaveLength(1);
         expect(dispatch.callCount).toBe(5);
         expect(dispatch.args[4][0].type).toBe(actions.CHART_UPDATE_FAILED);
         setupDefaultFetchMock();
@@ -305,7 +305,7 @@ describe('chart actions', () => {
         formData: fakeMetadata,
       });
 
-      expect(fetchMock.calls(mockBigIntUrl)).toHaveLength(1);
+      expect(fetchMock.callHistory.calls(mockBigIntUrl)).toHaveLength(1);
       expect(json.result[0].value.toString()).toEqual(expectedBigNumber);
     });
   });

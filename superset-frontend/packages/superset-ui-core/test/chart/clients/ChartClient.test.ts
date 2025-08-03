@@ -50,7 +50,7 @@ describe('ChartClient', () => {
     chartClient = new ChartClient();
   });
 
-  afterEach(() => fetchMock.restore());
+  afterEach(() => fetchMock.clearHistory());
 
   describe('new ChartClient(config)', () => {
     it('creates a client without argument', () => {
