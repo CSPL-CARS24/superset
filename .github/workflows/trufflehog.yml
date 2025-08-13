@@ -1,0 +1,244 @@
+name: TruffleHog Secret Scan
+
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  trufflehog:
+    runs-on: ubuntu-latest
+    name: TruffleHog Secret Scan
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Need full history to compare commits
+        
+    - name: Run TruffleHog
+      id: trufflehog
+      run: |
+        # Run TruffleHog directly to capture JSON output
+        docker run --rm -v "$PWD:/tmp" -w /tmp \
+          ghcr.io/trufflesecurity/trufflehog:latest \
+          git file:///tmp/ \
+          --since-commit=${{ github.event.pull_request.base.sha }} \
+          --branch=${{ github.event.pull_request.head.sha }} \
+          --debug --only-verified --json \
+          --no-update --github-actions > results.json
+        
+        # Show what we captured
+        echo "TruffleHog output captured:"
+        if [ -f "results.json" ]; then
+          echo "File size: $(wc -l < results.json) lines"
+          head -5 results.json
+        else
+          echo "No results.json file created"
+        fi
+        
+    - name: Process TruffleHog output
+      if: always()
+      run: |
+        echo "TruffleHog scan completed with outcome: ${{ steps.trufflehog.outcome }}"
+        
+        # Ensure results.json exists and is valid JSON
+        if [ -f "results.json" ] && [ -s "results.json" ]; then
+          echo "Found results.json with content"
+          # Validate JSON and convert to array format if needed
+          if ! jq empty results.json 2>/dev/null; then
+            echo "Invalid JSON, creating empty array"
+            echo "[]" > results.json
+          else
+            # Convert newline-separated JSON objects to array if needed
+            if ! jq -e 'type == "array"' results.json >/dev/null 2>&1; then
+              echo "Converting JSON objects to array format"
+              jq -s '.' results.json > temp.json && mv temp.json results.json
+            fi
+          fi
+        else
+          echo "No results.json found or empty, creating empty array"
+          echo "[]" > results.json
+        fi
+        
+        echo "Final results.json content:"
+        cat results.json
+        
+    - name: Upload scan results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: trufflehog-results
+        path: results.json
+        retention-days: 30
+        
+    # Comment results on PR only when secrets are found (step failed)
+    - name: Comment scan results
+      if: github.event_name == 'pull_request' && failure()
+      uses: actions/github-script@v7
+      continue-on-error: true
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          try {
+            if (!fs.existsSync('results.json')) {
+              console.log('No results.json file found');
+              return;
+            }
+            
+            const results = fs.readFileSync('results.json', 'utf8');
+            if (!results.trim()) {
+              console.log('Empty results file');
+              return;
+            }
+            
+            const findings = JSON.parse(results);
+            
+            let comment = '## 🔍 TruffleHog Secret Scan Results\n\n';
+            
+            if (findings.length > 0) {
+              comment += `**⚠️ Found ${findings.length} potential secret(s)**\n\n`;
+              comment += 'Please review and remediate any confirmed secrets before merging.\n\n';
+              
+              // Add details for verified secrets
+              const verified = findings.filter(f => f.Verified);
+              if (verified.length > 0) {
+                comment += `**Verified secrets (${verified.length}):**\n`;
+                verified.forEach(secret => {
+                  const file = secret.SourceMetadata?.Data?.Git?.file || 'unknown';
+                  const line = secret.SourceMetadata?.Data?.Git?.line || 'unknown';
+                  const detector = secret.DetectorName || 'unknown';
+                  comment += `- ${detector} in \`${file}:${line}\`\n`;
+                });
+                comment += '\n';
+              }
+              
+              comment += 'View detailed results in the Actions artifacts.';
+            } else {
+              // This should not happen since we only run on failure, but just in case
+              comment += '**⚠️ Workflow failed but no secrets found in results**\n\nPlease check the workflow logs for details.';
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          } catch (error) {
+            console.log('Error processing results:', error);
+            
+            // Post error comment
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## 🔍 TruffleHog Secret Scan Results\n\n❌ **Error processing scan results**\n\nPlease check the workflow logs for details.'
+            });
+          }
+          
+    # Send Slack notification for findings (only when secrets are detected)
+    - name: Send Slack notification
+      if: always()
+      env:
+        TRUFFLEHOG_SLACK_WEBHOOK_URL: ${{ secrets.TRUFFLEHOG_SLACK_WEBHOOK_URL }}
+      run: |
+        if [ -f "results.json" ] && [ ! -z "$TRUFFLEHOG_SLACK_WEBHOOK_URL" ]; then
+          FINDINGS_COUNT=$(jq '. | length' results.json 2>/dev/null || echo "0")
+          REPO_NAME="${{ github.repository }}"
+          
+          # Only send notification if secrets are found
+          if [ "$FINDINGS_COUNT" -gt 0 ]; then
+            SEVERITY="⚠️ WARNING"
+            COLOR="#ff9500"
+            MESSAGE="Found $FINDINGS_COUNT potential secret(s) in $REPO_NAME"
+            
+            RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            TRIGGER="${{ github.event_name }}"
+            ACTOR="${{ github.actor }}"
+            
+            # Get PR info
+            PR_TITLE="${{ github.event.pull_request.title }}"
+            COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
+            COMMIT_SHORT="${COMMIT_SHA:0:7}"
+            
+            PAYLOAD=$(cat <<EOF
+        {
+          "attachments": [
+            {
+              "color": "$COLOR",
+              "title": "🔍 TruffleHog Security Scan Results",
+              "title_link": "$RUN_URL",
+              "text": "$MESSAGE",
+              "fields": [
+                {
+                  "title": "Repository",
+                  "value": "<https://github.com/${{ github.repository }}|$REPO_NAME>",
+                  "short": true
+                },
+                {
+                  "title": "Status",
+                  "value": "$SEVERITY",
+                  "short": true
+                },
+                {
+                  "title": "Findings",
+                  "value": "$FINDINGS_COUNT potential secrets",
+                  "short": true
+                },
+                {
+                  "title": "Branch",
+                  "value": "${{ github.ref_name }}",
+                  "short": true
+                },
+                {
+                  "title": "Triggered by",
+                  "value": "$TRIGGER by $ACTOR",
+                  "short": true
+                },
+                {
+                  "title": "PR Title",
+                  "value": "$PR_TITLE",
+                  "short": false
+                },
+                {
+                  "title": "Commit",
+                  "value": "$COMMIT_SHORT",
+                  "short": true
+                }
+              ],
+              "actions": [
+                {
+                  "type": "button",
+                  "text": "View Run Details",
+                  "url": "$RUN_URL"
+                },
+                {
+                  "type": "button", 
+                  "text": "View Repository",
+                  "url": "https://github.com/${{ github.repository }}"
+                }
+              ],
+              "footer": "GitHub Actions • TruffleHog",
+              "ts": $(date +%s)
+            }
+          ]
+        }
+        EOF
+            )
+            
+            curl -X POST -H 'Content-type: application/json' \
+              --data "$PAYLOAD" \
+              "$TRUFFLEHOG_SLACK_WEBHOOK_URL"
+            
+            echo "Slack notification sent for $FINDINGS_COUNT secrets found"
+          else
+            echo "No secrets found - skipping Slack notification"
+          fi
+        else
+          echo "Skipping Slack notification: no results file or webhook URL not configured"
+        fi
