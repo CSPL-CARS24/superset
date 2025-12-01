@@ -1,0 +1,20 @@
+name: Semgrep Security Scan
+
+on:
+  pull_request:
+
+concurrency:
+  group: semgrep-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  semgrep:
+    if: github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]'
+    uses: CSPL-CARS24/centralised-repo-devops/.github/workflows/central-semgrep.yml@master
+    with:
+      block_on_high: false
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+
